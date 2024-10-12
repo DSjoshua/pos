@@ -242,9 +242,18 @@ function applyDiscount() {
   let discountPercent = prompt("Enter discount percentage:");
   if (discountPercent !== null && !isNaN(discountPercent)) {
     discountPercent = parseFloat(discountPercent);
+
+    // Check that the discount percentage is valid
+    if (discountPercent < 0 || discountPercent > 100) {
+      alert("Please enter a valid discount percentage (0-100).");
+      return;
+    }
+
     cartItems.forEach(item => {
-      item.totalPrice *= (1 - discountPercent / 100);
+      // Calculate the discount based on the original price
+      item.totalPrice = (item.price * item.quantity) * (1 - discountPercent / 100);
     });
+
     updateSubtotal();
     updateDisplay();
     alert(`Discount of ${discountPercent}% applied.`);
