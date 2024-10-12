@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>POS System with Product List</title>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Left panel for product display and control -->
+    <div class="left-panel">
+      <div class="product-selection">
+        <label for="product-input">Add Product (Name or Barcode):</label>
+        <input type="text" id="product-input" placeholder="Type name or scan barcode">
+      </div>
+
+      <div class="product-list" id="product-list">
+        <table>
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Products will be listed here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="control-buttons">
+        <button id="lookup-product">Look Up</button>
+        <button id="remove-product" onclick="removeSelectedProduct()">Remove Product</button>
+      </div>
+    </div>
+
+    <!-- Right panel for keypad and function buttons -->
+    <div class="right-panel">
+      <div class="display" id="display">$0.00</div>
+      <div class="keypad">
+        <button onclick="pressKey(7)">7</button>
+        <button onclick="pressKey(8)">8</button>
+        <button onclick="pressKey(9)">9</button>
+        <button onclick="pressKey(4)">4</button>
+        <button onclick="pressKey(5)">5</button>
+        <button onclick="pressKey(6)">6</button>
+        <button onclick="pressKey(1)">1</button>
+        <button onclick="pressKey(2)">2</button>
+        <button onclick="pressKey(3)">3</button>
+        <button onclick="pressKey(0)">0</button>
+        <button onclick="pressKey('.')">.</button>
+        <button onclick="clearDisplay()">C</button>
+      </div>
+
+      <div class="function-buttons" style="margin-top: 20px;">
+        <button onclick="changeQuantity()">Qty</button>
+        <button onclick="openCashDrawer()">Cash Drawer</button>
+        <button onclick="reprint()">Reprint</button>
+        <button onclick="applyDiscount()">Discount</button>
+        <button onclick="addNewItem()">New Item</button>
+        <button onclick="processTransaction()">OK</button>
+      </div>
+
+      <button class="pay-button" onclick="showPaymentModal()">Pay</button>
+    </div>
+  </div>
+  <!-- Payment Modal -->
+<div id="paymentModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" onclick="closePaymentModal()">&times;</span>
+    <h2>Payment</h2>
+    <div>Total: $<span id="modalTotal">0.00</span></div>
+    <input type="number" id="paymentInput" placeholder="Enter payment amount">
+    <div id="suggestionButtons"></div>
+    <button onclick="processPayment()">Confirm Payment</button>
+  </div>
+</div>
+
+
+  <!-- Product Lookup Modal -->
+  <div id="lookupModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeProductLookup()">&times;</span>
+      <h2>Product Lookup</h2>
+      <input type="text" id="productSearch" placeholder="Search products..." oninput="filterProducts()">
+      <table id="productTable">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
