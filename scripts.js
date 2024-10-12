@@ -23,9 +23,17 @@ function clearDisplay() {
 }
 
 function addProductToCart(name, price, quantity) {
+  // Check if the product exists in allProducts first
+  let existingProductData = allProducts.find(product => product.name === name);
+
+  if (!existingProductData) {
+    alert("Product not found in the available product list.");
+    return;
+  }
+
   let productList = document.getElementById('product-list');
-  
   let existingProduct = cartItems.find(item => item.name === name);
+  
   if (existingProduct) {
     existingProduct.quantity += quantity;
     existingProduct.totalPrice = existingProduct.price * existingProduct.quantity;
@@ -54,7 +62,23 @@ function addProductToCart(name, price, quantity) {
 
   updateSubtotal();
   updateDisplay();
+  saveCartToLocalStorage();
 }
+
+document.getElementById('product-input').addEventListener('keyup', function(event) {
+  if (event.key === 'Enter') {
+    let input = this.value.trim();
+    if (input) {
+      let existingProduct = allProducts.find(product => product.name.toLowerCase() === input.toLowerCase());
+      if (existingProduct) {
+        addProductToCart(existingProduct.name, existingProduct.price, 1);
+      } else {
+        alert("Product not available");
+      }
+      this.value = '';
+    }
+  }
+});
 
 function selectProduct(event) {
   let productItems = document.querySelectorAll('.product-item');
@@ -91,10 +115,23 @@ function updateSubtotal() {
 }
 
 function processTransaction() {
-  if (subtotal > 0) {
+  if (subtotal > 0 && cartItems.length > 0) { // Ensure there are items in the cart
     showPaymentModal();
   } else {
     alert("No items in the cart to process.");
+  }
+}
+
+function processPayment() {
+  let amountPaid = parseFloat(document.getElementById('paymentInput').value);
+  if (amountPaid >= subtotal) {
+    let change = amountPaid - subtotal;
+    alert(`Payment of $${amountPaid.toFixed(2)} received. Change: $${change.toFixed(2)}`);
+    document.getElementById('display').innerText = `Change: $${change.toFixed(2)}`;
+    resetCart(); // Clear the cart after showing the change
+    closePaymentModal();
+  } else {
+    alert("Insufficient payment amount.");
   }
 }
 
@@ -139,13 +176,13 @@ function processPayment() {
     let change = amountPaid - subtotal;
     alert(`Payment of $${amountPaid.toFixed(2)} received. Change: $${change.toFixed(2)}`);
     document.getElementById('display').innerText = `Change: $${change.toFixed(2)}`;
-    printReceipt(amountPaid, change);
-    resetCart();
+    resetCart(); // Clear the cart after showing the change
     closePaymentModal();
   } else {
     alert("Insufficient payment amount.");
   }
 }
+
 
 function resetCart() {
   document.getElementById('product-list').innerHTML = '';
@@ -238,7 +275,7 @@ function changeQuantity() {
     let product = cartItems[index];
     showQuantityModal(product);
   } else {
-    alert("Please select a product to change quantity.");
+  
   }
 }
 
@@ -364,3 +401,5 @@ function initPOS() {
 }
 
 document.addEventListener('DOMContentLoaded', initPOS);
+
+

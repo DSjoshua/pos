@@ -62,6 +62,10 @@ body {
     background-color: #f5f5f5;
 }
 
+.product-item:focus {
+    background-color: #e52828; /* Selected highlight */
+}
+
 .product-item-details {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
