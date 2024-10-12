@@ -22,23 +22,33 @@ function clearDisplay() {
   updateDisplay();
 }
 
-function addProductToCart(name, price, quantity) {
-  // Check if the product exists in allProducts first
-  let existingProductData = allProducts.find(product => product.name === name);
-
-  if (!existingProductData) {
-    alert("Product not found in the available product list.");
-    return;
+document.getElementById('product-input').addEventListener('keyup', function(event) {
+  if (event.key === 'Enter') {
+    let input = this.value.trim();
+    if (input) {
+      // Normalize the input to lower case for comparison
+      let normalizedInput = input.toLowerCase();
+      let existingProduct = allProducts.find(product => product.name.toLowerCase() === normalizedInput);
+      
+      if (existingProduct) {
+        addProductToCart(existingProduct.name, existingProduct.price, 1);
+      } else {
+        alert("Product not available in the list. Please use the lookup.");
+      }
+      this.value = ''; // Clear the input field
+    }
   }
+});
 
+function addProductToCart(name, price, quantity) {
   let productList = document.getElementById('product-list');
-  let existingProduct = cartItems.find(item => item.name === name);
+  let existingProduct = cartItems.find(item => item.name.toLowerCase() === name.toLowerCase()); // Check for existing product ignoring case
   
   if (existingProduct) {
     existingProduct.quantity += quantity;
     existingProduct.totalPrice = existingProduct.price * existingProduct.quantity;
-    
-    let productItem = Array.from(productList.children).find(el => el.querySelector('.product-item-name').innerText === name);
+
+    let productItem = Array.from(productList.children).find(el => el.querySelector('.product-item-name').innerText.toLowerCase() === name.toLowerCase());
     productItem.querySelector('.product-item-quantity').innerText = `x${existingProduct.quantity}`;
     productItem.querySelector('.product-item-price').innerText = `$${existingProduct.totalPrice.toFixed(2)}`;
   } else {
@@ -46,14 +56,17 @@ function addProductToCart(name, price, quantity) {
     product.className = "product-item";
     product.dataset.index = cartItems.length;
     let totalPrice = price * quantity;
-    
+
+    // Capitalize the first letter of the product name for display
+    let displayName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
     product.innerHTML = `
       <div class="product-item-details">
-        <span class="product-item-name">${name}</span>
+        <span class="product-item-name">${displayName}</span>
         <span class="product-item-quantity">x${quantity}</span>
         <span class="product-item-price">$${totalPrice.toFixed(2)}</span>
       </div>`;
-    
+
     product.addEventListener('click', selectProduct);
     productList.appendChild(product);
 
@@ -64,21 +77,6 @@ function addProductToCart(name, price, quantity) {
   updateDisplay();
   saveCartToLocalStorage();
 }
-
-document.getElementById('product-input').addEventListener('keyup', function(event) {
-  if (event.key === 'Enter') {
-    let input = this.value.trim();
-    if (input) {
-      let existingProduct = allProducts.find(product => product.name.toLowerCase() === input.toLowerCase());
-      if (existingProduct) {
-        addProductToCart(existingProduct.name, existingProduct.price, 1);
-      } else {
-        alert("Product not available");
-      }
-      this.value = '';
-    }
-  }
-});
 
 function selectProduct(event) {
   let productItems = document.querySelectorAll('.product-item');
